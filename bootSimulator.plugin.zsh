@@ -4,24 +4,23 @@
 # ----------------------
 
 bootSimulator() {
-    allDevicesFile=$TMPDIR"simlist.txt"
-    trap "rm $allDevicesFile" EXIT
+    allDevices=$TMPDIR"simlist.txt"
+    trap "rm $allDevices" EXIT
 
-    iosVersionsFile=$TMPDIR"iosVersions.txt"
-    trap "rm $iosVersionsFile" EXIT
+    iosVersions=$TMPDIR"iosVersions.txt"
+    trap "rm $iosVersions" EXIT
 
-    devicesForVersionFile=$TMPDIR"tmpDevices.txt"
-    trap "rm $devicesForVersionFile" EXIT
+    devicesForVersion=$TMPDIR"tmpDevices.txt"
+    trap "rm $devicesForVersion" EXIT
 
-    xcrun simctl list > $allDevicesFile
+    xcrun simctl list > $allDevices
 
-    grep -E '\-\- iOS .... \-\-' $allDevicesFile | tr -d \- > $iosVersionsFile
+    grep -E '\-\- iOS .... \-\-' $allDevices | tr -d \- > $iosVersions
 
-    numberOfVersions=$(wc -l < $iosVersionsFile)
+    numberOfVersions=$(wc -l < $iosVersions)
 
     if [ $numberOfVersions -eq 1 ] ; then
-        cat $iosVersionsFile
-        iosVersion=$(head -$choice $iosVersionsFile | tail -1)
+        iosVersion=$(head -$choice $iosVersions | tail -1)
     else 
         echo "What iOS version do you want to run?"
 
@@ -29,11 +28,11 @@ bootSimulator() {
         while read line; do 
             echo $n. $line
             n=$((n+1))
-        done < $iosVersionsFile
+        done < $iosVersions
         
         printf 'iOS version: '
         read tmp 
-        iosVersion=$(head -$tmp $iosVersionsFile | tail -1)
+        iosVersion=$(head -$tmp $iosVersions | tail -1)
     fi
     iosVersion="--$iosVersion--"
 
@@ -47,11 +46,12 @@ bootSimulator() {
         # If we reached the iOS version selected, add the line to the file
         if [ $line = $iosVersion ] || [ $isChosenVersion -eq 1 ] ; then
             isChosenVersion=1
+            # Append every device of the chosen OS in a file
             if [ $line != $iosVersion ] ; then
-                echo $line >> $devicesForVersionFile
+                echo $line >> $devicesForVersion
             fi
         fi
-    done < $allDevicesFile
+    done < $allDevices
 
     echo $iosVersion
 
@@ -59,13 +59,13 @@ bootSimulator() {
     while read line; do 
         echo $n. $line
         n=$((n+1))
-    done < $devicesForVersionFile
+    done < $devicesForVersion
 
     # Get user input
     printf 'Device number: '
     read choice
 
-    device=$(head -$choice $devicesForVersionFile | tail -1)
+    device=$(head -$choice $devicesForVersion | tail -1)
     deviceId=$(echo $device | cut -d "(" -f2 | cut -d ")" -f1)
     deviceName=$(echo $device | cut -d "(" -f1)
 
