@@ -1,8 +1,13 @@
 # Boot iOS simulators from terminal!
 
-This `zsh` plugin let's you easily boot iOS simulators from terminal.
+This `oh-my-zsh` plugin let's you easily boot iOS simulators from terminal.
 
 ## How to install
+
+### Prerequisites
+1. `zsh`
+2. [`oh-my-zsh`](https://github.com/robbyrussell/oh-my-zsh)
+
 Open terminal and paste the following line.
 
 `git clone https://github.com/Schroefdop/bootSimulator.git ~/.oh-my-zsh/custom/plugins/bootSimulator`
