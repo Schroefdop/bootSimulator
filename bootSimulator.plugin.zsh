@@ -46,8 +46,8 @@ bootSimulator() {
         # If we reached the iOS version selected, add the line to the file
         if [ $line = $iosVersion ] || [ $isChosenVersion -eq 1 ] ; then
             isChosenVersion=1
-            # Append every device of the chosen OS in a file
-            if [ $line != $iosVersion ] ; then
+            # Append every device of the chosen OS in a file, except if it already booted
+            if [ $line != $iosVersion ] && [[ $line != *"Booted"* ]] ; then
                 echo $line >> $devicesForVersion
             fi
         fi
