@@ -14,6 +14,7 @@ Open terminal and paste the following line.
 `git clone https://github.com/Schroefdop/bootSimulator.git ~/.oh-my-zsh/custom/plugins/bootSimulator`
 
 After cloning is done, add the plugin to you `.zshrc` file by pasting the following code in terminal:
+This will append the `bootSimulator` plugin to the `plugins` list.
 ```
 while read line; do
     if [[ $line == plugins* ]]; then
