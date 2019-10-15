@@ -13,8 +13,13 @@ Open terminal and paste the following line.
 
 `git clone https://github.com/Schroefdop/bootSimulator.git ~/.oh-my-zsh/custom/plugins/bootSimulator`
 
-After cloning is done, add the plugin to you `.zshrc` file.
-1. `vim ~/.zshrc`
-2. Add `bootSimulator` to the plugins
-3. Save and quit
-4. Restart terminal and type `bootSimulator` to run the plugin
+After cloning is done, add the plugin to you `.zshrc` file by pasting the following code in terminal:
+```
+while read line; do
+    if [[ $line == plugins* ]]; then
+        sed -i -e 's/)/ bootSimulator)/g' ~/.zshrc
+    fi
+  done < ~/.zshrc
+```
+
+Restart terminal and run `bootSimulator`
