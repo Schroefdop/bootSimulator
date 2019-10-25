@@ -57,7 +57,7 @@ bootSimulator() {
 
     n=1
     while read line; do
-        echo $n. $line | gsed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g"
+        echo $n. $line | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g"
         n=$((n + 1))
     done <$devicesForVersion
 
