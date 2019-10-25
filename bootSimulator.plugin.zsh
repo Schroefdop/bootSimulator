@@ -4,14 +4,15 @@
 # ----------------------
 
 bootSimulator() {
-    allDevices=$TMPDIR"simlist.txt"
-    trap "rm $allDevices" EXIT
+    allDevices=$(mktemp)
+    trap "{ rm -f $allDevices; }" EXIT
 
-    iosVersions=$TMPDIR"iosVersions.txt"
-    trap "rm $iosVersions" EXIT
+    iosVersions=$(mktemp)
+    trap "{ rm -f $iosVersions; }" EXIT
 
-    devicesForVersion=$TMPDIR"tmpDevices.txt"
-    trap "rm $devicesForVersion" EXIT
+    devicesForVersion=$(mktemp)
+    # devicesForVersion=$TMPDIR"tmpDevices.txt"
+    trap "{ rm -f $devicesForVersion; }" EXIT
 
     xcrun simctl list > $allDevices
 
