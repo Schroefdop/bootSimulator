@@ -20,7 +20,7 @@ bootSimulator() {
     numberOfVersions=$(wc -l <$iosVersions)
 
     if [ $numberOfVersions -eq 1 ]; then
-        iosVersion=$(head -$choice $iosVersions | tail -1)
+        iosVersion=$(cat $iosVersions)
     else
         echo "What iOS version do you want to run?"
 
