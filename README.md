@@ -19,4 +19,4 @@ exec zsh
 
 Run `bootSimulator` to run the script!  
 
-![](bootSimulator.gif)
+![](https://media.giphy.com/media/ZbOGdJJzqvOWkPchrt/giphy.gif)
