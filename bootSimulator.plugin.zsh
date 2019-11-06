@@ -66,7 +66,7 @@ bootSimulator() {
     read choice
 
     device=$(head -$choice $devicesForVersion | tail -1)
-    deviceId=$(echo $device | cut -d "(" -f2 | cut -d ")" -f1)
+    deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
     deviceName=$(echo $device | cut -d "(" -f1)
 
     echo "⏳ Booting $deviceName..."
