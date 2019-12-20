@@ -3,6 +3,10 @@
 # Boot iOS simulators from terminal!
 # ----------------------
 
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+input=
+
 bootSimulator() {
     #
     # Create temporary files which will be deleted when script terminates
@@ -46,12 +50,9 @@ bootSimulator() {
             n=$((n + 1))
         done <$iosVersions
 
-        #
-        # Read user choice and set chosen iOS version
-        #
-        printf 'iOS version: '
-        read tmp
-        iosVersion=$(head -$tmp $iosVersions | tail -1)
+        _validateInput 'iOS version: '
+
+        iosVersion=$(head -$input $iosVersions | tail -1)
     fi
     iosVersion="--$iosVersion--"
 
@@ -95,22 +96,41 @@ bootSimulator() {
         n=$((n + 1))
     done <$devicesForVersion
 
-    #
-    # Read user input
-    #
-    printf 'Device number: '
-    read choice
+    _validateInput 'Device number: '
 
     #
     # Get all device details
     # Extract the id of the device
     # Extract the name of the device
     #
-    device=$(head -$choice $devicesForVersion | tail -1)
+    device=$(head -$input $devicesForVersion | tail -1)
     deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
-    deviceName=$(echo $device | cut -d "(" -f1)
+    deviceName=$(echo $device | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g") # Cut id and booted status
 
     echo "⏳ Booting $deviceName..."
     xcrun simctl boot $deviceId
     open -a simulator
+}
+
+_validateInput() {
+    while true; do
+        #
+        # Read user input
+        #
+        printf $1
+        read tmp
+
+        #
+        # If input is not an integer or if input is out of range, throw an error
+        # Ask for input again
+        #
+        if [[ ! $tmp =~ ^[0-9]+$ ]]; then
+            echo "${RED}Invalid input${NOCOLOR}"
+        elif [[ "$tmp" -lt "1" ]] || [[ "$tmp" -gt $((n - 1)) ]]; then
+            echo "${RED}Input out of range ${NOCOLOR}"
+        else
+            input=$tmp
+            break
+        fi
+    done
 }
