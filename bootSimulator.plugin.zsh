@@ -3,8 +3,6 @@
 # Boot iOS simulators from terminal!
 # ----------------------
 
-NOCOLOR='\033[0m'
-RED='\033[0;31m'
 input=
 
 bootSimulator() {
@@ -113,6 +111,9 @@ bootSimulator() {
 }
 
 _validateInput() {
+    local NOCOLOR='\033[0m'
+    local RED='\033[0;31m'
+
     while true; do
         #
         # Read user input
