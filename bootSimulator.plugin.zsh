@@ -3,7 +3,7 @@
 # Boot iOS simulators from terminal!
 # ----------------------
 
-input=
+_INPUT=
 
 bootSimulator() {
     #
@@ -50,7 +50,7 @@ bootSimulator() {
 
         _validateInput 'iOS version: '
 
-        iosVersion=$(head -$input $iosVersions | tail -1)
+        iosVersion=$(head -$_INPUT $iosVersions | tail -1)
     fi
     iosVersion="--$iosVersion--"
 
@@ -101,7 +101,7 @@ bootSimulator() {
     # Extract the id of the device
     # Extract the name of the device
     #
-    device=$(head -$input $devicesForVersion | tail -1)
+    device=$(head -$_INPUT $devicesForVersion | tail -1)
     deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
     deviceName=$(echo $device | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g") # Cut id and booted status
 
@@ -130,7 +130,7 @@ _validateInput() {
         elif [[ "$tmp" -lt "1" ]] || [[ "$tmp" -gt $((n - 1)) ]]; then
             echo "${RED}Input out of range ${NOCOLOR}"
         else
-            input=$tmp
+            _INPUT=$tmp
             break
         fi
     done
