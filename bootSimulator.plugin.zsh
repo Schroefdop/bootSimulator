@@ -38,7 +38,6 @@ bootSimulator() {
 
         case $tmp in
         [Yy]*)
-            echo "What Xcode simulator do you want to run?"
             n=1
             while read line; do
                 # Remove "/Applications/" prefix
@@ -56,7 +55,7 @@ bootSimulator() {
             echo "Switching Xcode command-line to target version..."
             sudo xcode-select --switch $xcodeVersion/Contents/Developer
             ;;
-        *) break ;;
+        *) ;;
         esac
     fi
 
@@ -76,6 +75,8 @@ bootSimulator() {
     # If only one version is found, show available devices immediatly
     # Else let the user choose which iOS version they want to boot
     #
+
+    echo
     if [ $numberOfVersions -eq 1 ]; then
         iosVersion=$(cat $iosVersions)
     else
@@ -99,6 +100,8 @@ bootSimulator() {
     #
     # Loop all the devices and only write devices for chosen iOS version to file
     #
+
+    echo
     isChosenVersion=0
     while read line; do
         #
@@ -123,6 +126,7 @@ bootSimulator() {
         fi
     done <$allDevices
 
+    echo
     echo $iosVersion
 
     #
