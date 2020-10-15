@@ -9,6 +9,9 @@ bootSimulator() {
     #
     # Create temporary files which will be deleted when script terminates
     #
+    xcodeVersions=$(mktemp)
+    trap "{ rm -f $xcodeVersions; }" EXIT
+
     allDevices=$(mktemp)
     trap "{ rm -f $allDevices; }" EXIT
 
@@ -17,6 +20,45 @@ bootSimulator() {
 
     devicesForVersion=$(mktemp)
     trap "{ rm -f $devicesForVersion; }" EXIT
+
+    #
+    # Which xcode?
+    #
+    find /Applications -iname "xcode*.app" -maxdepth 1 >$xcodeVersions
+
+    if [ $xcodeVersions ] >1; then
+        echo "Multiple Xcode applications found!"
+        echo
+        echo "Current selected Xcode tools:"
+        /usr/bin/xcodebuild -version
+        echo
+
+        printf "Would you like to switch tools? [y/n] "
+        read tmp
+
+        case $tmp in
+        [Yy]*)
+            echo "What Xcode simulator do you want to run?"
+            n=1
+            while read line; do
+                # Remove "/Applications/" prefix
+                line=${line##*/}
+                # Remove ".app" suffix
+                line=${line%.app}
+                echo $n. $line
+                n=$((n + 1))
+            done <$xcodeVersions
+
+            _validateInput 'Xcode version: '
+
+            xcodeVersion=$(head -$_INPUT $xcodeVersions | tail -1)
+
+            echo "Switching Xcode command-line to target version..."
+            sudo xcode-select --switch $xcodeVersion/Contents/Developer
+            ;;
+        *) break ;;
+        esac
+    fi
 
     #
     # Write all the devices to the file
