@@ -5,6 +5,9 @@
 
 _INPUT=
 
+_devicesToLaunch=$(mktemp)
+trap "{ rm -f $_devicesToLaunch; }" EXIT
+
 bootSimulator() {
     #
     # Create temporary files which will be deleted when script terminates
@@ -101,7 +104,6 @@ bootSimulator() {
     # Loop all the devices and only write devices for chosen iOS version to file
     #
 
-    echo
     isChosenVersion=0
     while read line; do
         #
@@ -140,20 +142,24 @@ bootSimulator() {
         n=$((n + 1))
     done <$devicesForVersion
 
-    _validateInput 'Device number: '
+    _validateListInput 'Device number(s): '
 
     #
     # Get all device details
     # Extract the id of the device
     # Extract the name of the device
     #
-    device=$(head -$_INPUT $devicesForVersion | tail -1)
-    deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
-    deviceName=$(echo $device | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g") # Cut id and booted status
 
-    echo "⏳ Booting $deviceName..."
-    xcrun simctl boot $deviceId
-    open -a simulator
+    while read line; do
+        device=$(head -$line $devicesForVersion | tail -1)
+        deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
+        deviceName=$(echo $device | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g") # Cut id and booted status
+
+        echo "⏳ Booting $deviceName..."
+        # xcrun simctl boot $deviceId
+    done <$_devicesToLaunch
+
+    # open -a simulator
 }
 
 _validateInput() {
@@ -180,4 +186,37 @@ _validateInput() {
             break
         fi
     done
+}
+
+_validateListInput() {
+    printf $1
+    read input
+
+    # while true; do
+    #     printf $1
+    #     read input
+
+    #     if [[ $input =~ [A-z] ]]; then
+    #         echo "${RED}Invalid input${NOCOLOR}"
+    #     else
+    #         break
+    #     fi
+    # done
+
+    IFS=', ' read -r -a array <<<$input
+    echo $IFS
+
+    # If it is a comma separated list, split on commas, else split on whitespaces
+    if [[ "$input" == *","* ]]; then
+        _splitStringOnCharacter ","
+    else
+        _splitStringOnCharacter " "
+    fi
+}
+
+_splitStringOnCharacter() {
+    echo "Split on -$1-"
+    # Trim the whitespaces after slpitting
+    # Append to file
+    echo $input | tr "$1" "\n" | sed -e 's/^[[:space:]]*//' >>$_devicesToLaunch
 }

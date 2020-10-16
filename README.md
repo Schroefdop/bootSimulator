@@ -23,6 +23,6 @@ Run `bootSimulator` to run the script!
 - Looks into the `/Applications/` directory for apps starting with `Xcode`. When multiple are found, an option will be presented to switch Xcode tools. This is required if you would like to launch an older Simulator.app
 - Checks the available Simulator iOS versions
 - Lists available devices for the chosen iOS version
-- Opens the device on your command!
+- Open one or more devices on your command!
 
 ![](https://media.giphy.com/media/ZbOGdJJzqvOWkPchrt/giphy.gif)
