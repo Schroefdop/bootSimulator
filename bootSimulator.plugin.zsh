@@ -5,13 +5,14 @@
 
 _INPUT=
 
-_devicesToLaunch=$(mktemp)
-trap "{ rm -f $_devicesToLaunch; }" EXIT
-
 bootSimulator() {
     #
     # Create temporary files which will be deleted when script terminates
     #
+
+    devicesToLaunch=$(mktemp)
+    trap "{ rm -f $devicesToLaunch; }" EXIT
+
     xcodeVersions=$(mktemp)
     trap "{ rm -f $xcodeVersions; }" EXIT
 
@@ -23,6 +24,8 @@ bootSimulator() {
 
     devicesForVersion=$(mktemp)
     trap "{ rm -f $devicesForVersion; }" EXIT
+
+    deviceIdRegex="[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}"
 
     #
     # Which xcode?
@@ -138,7 +141,7 @@ bootSimulator() {
     #
     n=1
     while read line; do
-        echo $n. $line | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g"
+        echo $n. $line | sed -E "s/\($deviceIdRegex\).*//g"
         n=$((n + 1))
     done <$devicesForVersion
 
@@ -152,12 +155,12 @@ bootSimulator() {
 
     while read line; do
         device=$(head -$line $devicesForVersion | tail -1)
-        deviceId=$(echo $device | grep -oE '[A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}')
-        deviceName=$(echo $device | sed -E "s/\([A-Z0-9]{8}(-[A-Z0-9]{4}){3}-[A-Z0-9]{12}\).*//g") # Cut id and booted status
+        deviceId=$(echo $device | grep -oE $deviceIdRegex)
+        deviceName=$(echo $device | sed -E "s/\($deviceIdRegex\).*//g") # Cut id and booted status
 
         echo "⏳ Booting $deviceName..."
         # xcrun simctl boot $deviceId
-    done <$_devicesToLaunch
+    done <$devicesToLaunch
 
     # open -a simulator
 }
@@ -189,22 +192,16 @@ _validateInput() {
 }
 
 _validateListInput() {
-    printf $1
-    read input
+    while true; do
+        printf $1
+        read input
 
-    # while true; do
-    #     printf $1
-    #     read input
-
-    #     if [[ $input =~ [A-z] ]]; then
-    #         echo "${RED}Invalid input${NOCOLOR}"
-    #     else
-    #         break
-    #     fi
-    # done
-
-    IFS=', ' read -r -a array <<<$input
-    echo $IFS
+        if [[ $input =~ [A-z] ]]; then
+            echo "${RED}Invalid input${NOCOLOR}"
+        else
+            break
+        fi
+    done
 
     # If it is a comma separated list, split on commas, else split on whitespaces
     if [[ "$input" == *","* ]]; then
@@ -215,8 +212,8 @@ _validateListInput() {
 }
 
 _splitStringOnCharacter() {
-    echo "Split on -$1-"
+    echo "Split on [$1]"
     # Trim the whitespaces after slpitting
     # Append to file
-    echo $input | tr "$1" "\n" | sed -e 's/^[[:space:]]*//' >>$_devicesToLaunch
+    echo $input | tr "$1" "\n" | sed -e 's/^[[:space:]]*//' >>$devicesToLaunch
 }
