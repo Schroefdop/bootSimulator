@@ -24,40 +24,41 @@ bootSimulator() {
     #
     # Which xcode?
     #
-    find /Applications -iname "xcode*.app" -maxdepth 1 >$xcodeVersions
 
-    if [ $xcodeVersions ] >1; then
-        echo "Multiple Xcode applications found!"
-        echo
-        echo "Current selected Xcode tools:"
-        /usr/bin/xcodebuild -version
-        echo
+    # find /Applications -iname "xcode*.app" -maxdepth 1 >$xcodeVersions
 
-        printf "Would you like to switch tools? [y/n] "
-        read tmp
+    # if [ $xcodeVersions ] >1; then
+    #     echo "Multiple Xcode applications found!"
+    #     echo
+    #     echo "Current selected Xcode tools:"
+    #     /usr/bin/xcodebuild -version
+    #     echo
 
-        case $tmp in
-        [Yy]*)
-            n=1
-            while read line; do
-                # Remove "/Applications/" prefix
-                line=${line##*/}
-                # Remove ".app" suffix
-                line=${line%.app}
-                echo $n. $line
-                n=$((n + 1))
-            done <$xcodeVersions
+    #     printf "Would you like to switch tools? [y/n] "
+    #     read tmp
 
-            _validateInput 'Xcode version: '
+    #     case $tmp in
+    #     [Yy]*)
+    #         n=1
+    #         while read line; do
+    #             # Remove "/Applications/" prefix
+    #             line=${line##*/}
+    #             # Remove ".app" suffix
+    #             line=${line%.app}
+    #             echo $n. $line
+    #             n=$((n + 1))
+    #         done <$xcodeVersions
 
-            xcodeVersion=$(head -$_INPUT $xcodeVersions | tail -1)
+    #         _validateInput 'Xcode version: '
 
-            echo "Switching Xcode command-line to target version..."
-            sudo xcode-select --switch $xcodeVersion/Contents/Developer
-            ;;
-        *) ;;
-        esac
-    fi
+    #         xcodeVersion=$(head -$_INPUT $xcodeVersions | tail -1)
+
+    #         echo "Switching Xcode command-line to target version..."
+    #         sudo xcode-select --switch $xcodeVersion/Contents/Developer
+    #         ;;
+    #     *) ;;
+    #     esac
+    # fi
 
     #
     # Write all the devices to the file
